@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document</title>
+</head>
+<body>
+<script>
+// This program calculates the Key for two persons
+// using the Diffie-Hellman Key exchange algorithm
+// Power function to return value of a ^ b mod P
+function power(a, b, p)
+{
+if (b == 1)
+return a;
+else
+return((Math.pow(a, b)) % p);
+}
+// Driver code
+var P, G, x, a, y, b, ka, kb;
+// Both the persons will be agreed upon the
+// public keys G and P
+// A prime number P is taken
+P = 23;
+document.write("The value of P:" + P + "<br>");
+// A primitive root for P, G is taken
+G = 9;
+document.write("The value of G:" + G + "<br>");
+// Alice will choose the private key a
+// a is the chosen private key
+a = 4;
+document.write("The private key a for Alice:" +
+a + "<br>");
+// Gets the generated key
+x = power(G, a, P);
+// Bob will choose the private key b
+// b is the chosen private key
+b = 3;
+document.write("The private key b for Bob:" +
+b + "<br>");
+// Gets the generated key
+y = power(G, b, P);
+// Generating the secret key after the exchange
+// of keys
+ka = power(y, a, P); // Secret key for Alice
+kb = power(x, b, P); // Secret key for Bob
+document.write("Secret key for the Alice is:" +
+ka + "<br>");
+document.write("Secret key for the Bob is:" +
+kb + "<br>");
+</script>
+</body>
+</html>
+
+
+----------------------------------------------------------------------------
+-------------------------------------------------------------------------------
+JAVA
+import java.math.BigInteger;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+
+import javax.crypto.KeyAgreement;
+
+public class hellmankeyexchange {
+    public static void main(String[] args) throws Exception {
+        // Generate public and private keys for Alice
+        KeyPairGenerator aliceKeyGen = KeyPairGenerator.getInstance("DH");
+        aliceKeyGen.initialize(2048);
+        KeyPair aliceKeyPair = aliceKeyGen.generateKeyPair();
+        PublicKey alicePublicKey = aliceKeyPair.getPublic();
+        PrivateKey alicePrivateKey = aliceKeyPair.getPrivate();
+
+        // Generate public and private keys for Bob
+        KeyPairGenerator bobKeyGen = KeyPairGenerator.getInstance("DH");
+        bobKeyGen.initialize(2048);
+        KeyPair bobKeyPair = bobKeyGen.generateKeyPair();
+        PublicKey bobPublicKey = bobKeyPair.getPublic();
+        PrivateKey bobPrivateKey = bobKeyPair.getPrivate();
+
+        // Generate shared secret key for Alice and Bob
+        BigInteger aliceSecretKey = generateSecretKey(alicePrivateKey, bobPublicKey);
+        BigInteger bobSecretKey = generateSecretKey(bobPrivateKey, alicePublicKey);
+
+        System.out.println("Alice's public key: " + alicePublicKey);
+        System.out.println("Bob's public key: " + bobPublicKey);
+        System.out.println("Shared secret key: " + aliceSecretKey);
+        System.out.println("Shared secret key: " + bobSecretKey);
+    }
+
+    private static BigInteger generateSecretKey(PrivateKey privateKey, PublicKey publicKey) throws Exception {
+        // Generate shared secret key using the private and public keys
+        KeyAgreement keyAgreement = KeyAgreement.getInstance("DH");
+        keyAgreement.init(privateKey);
+        keyAgreement.doPhase(publicKey, true);
+        byte[] secretKeyBytes = keyAgreement.generateSecret();
+        return new BigInteger(1, secretKeyBytes);
+    }
+}
+
+
